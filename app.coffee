@@ -32,33 +32,28 @@ Ext.onReady () ->
             },
         }
     }
-    search = Ext.create 'Ext.form.field.Text', {
-        name: 'query',
-        fieldLabel: 'Search',
-        enableKeyEvents: true,
-        onKeyUp: () ->
-            store.getProxy().url = baseUrl + "&q=#{this.value}"
-            store.load()
-    }
-    toolbar = Ext.create 'Ext.toolbar.Toolbar', {
-        items: [search],
-    }
     grid = Ext.create 'Ext.grid.Panel', {
         store: store,
         plugins: [{
             ptype: 'rowexpander',
             selectRowOnExpand: true,
-            rowBodyTpl: [
-                '<span class="iframe">{embed}</span>',
-            ],
+            rowBodyTpl: ['<span class="iframe">{embed}</span>'],
         }],
-        tbar: toolbar,
+        tbar: (Ext.create 'Ext.toolbar.Toolbar', {
+            items: [Ext.create 'Ext.form.field.Text', {
+                name: 'query',
+                fieldLabel: 'Search',
+                enableKeyEvents: true,
+                onKeyUp: () ->
+                    store.getProxy().url = baseUrl + "&q=#{this.value}"
+                    store.load()
+            }],
+        }),
         columns: [{
             text: 'Title',
             flex: 3,
             dataIndex: 'title',
-            renderer: (value,p,record) ->
-                Ext.String.format '<a href="{0}">{1}</a>', record.data.link, value
+            renderer: (value,p,record) -> "<a href=\"#{record.data.link}\">#{value}</a>",
         },{
             text: 'Author',
             flex: 1,
@@ -69,6 +64,7 @@ Ext.onReady () ->
             dataIndex: 'pubDate',
         }],
     }
+    # Only load the iframe when the user expands the row
     grid.view.on 'expandbody', (fullRow, record, row) ->
         span = (row.querySelector 'span.iframe')
         video = span.innerText
