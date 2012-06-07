@@ -68,7 +68,7 @@ Ext.onReady ->
     grid.view.on 'expandbody', (fullRow, record, row) ->
         span = row.querySelector 'span.iframe'
         if span
-            video = span.innerText
+            video = span.innerHTML
             span.outerHTML =
                 "<iframe class=\"video\" type=\"text/html\" allowfullscreen src=\"#{video}\" />" +
                 "<p class=\"description\">#{record.data.description}</p>"
