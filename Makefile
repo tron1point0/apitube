@@ -4,4 +4,4 @@ COFFEE := coffee
 all: app.js
 
 %.js: %.coffee
-        $(COFFEE) -p $^ > $@
+	$(COFFEE) -p $^ > $@
