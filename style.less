@@ -1,0 +1,117 @@
+@pivot: 195;
+@split: 120;
+
+@pri: hsl(@pivot,20%,90%);
+@sec: spin(@pri,@split);
+@ter: spin(@pri,-@split);
+
+input#search {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 1.7em;
+    font-size: 120%;
+    font-weight: bold;
+    padding: 0.3em 0.5em 0.3em 0.5em;
+    margin: 0;
+    border: 1px solid darken(@pri,50%);
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    box-shadow: 0 0 0.5em black;
+}
+
+div#preload {
+    display: none;
+    width: 100%;
+}
+
+div.result {
+    border: 1px solid darken(@pri,20%);
+    background-color: @pri;
+    padding: 1em;
+    min-height: 120px;
+    margin: 1em 0 0.5em 0;
+
+    div.video {
+        display: none;
+    }
+
+    img {
+        width: 120px;
+        min-height: 90px;
+        float: left;
+        margin: 0 0.5em 0.5em 0;
+    }
+
+    h1 {
+        font-size: 120%;
+        margin: 0 1em 0.1em 0;
+    }
+
+    a {
+        float: right;
+        color: darken(@pri,40%);
+        text-decoration: none;
+        border-radius: 0.4em;
+        border: 1px solid darken(@pri,40%);
+        background-color: darken(@pri,10%);
+        padding: 0.3em 0.5em 0.3em 0.5em;
+        font-size: 80%;
+        &:after {
+            content: '➚';
+        }
+        &:visited {
+            color: darken(@pri,50%);
+        }
+        &:hover {
+            border-color: darken(@sec,40%);
+            color: darken(@sec,40%);
+            background-color: darken(@sec,10%);
+        }
+        &:active {
+            box-shadow: inset 0 0 0.5em gray;
+        }
+    }
+
+    p {
+        font-size: 80%;
+        margin-left: 130px;
+    }
+
+    div.author,div.date {
+        font-size: 70%;
+        color: darken(@pri,60%);
+    }
+    div.author:before {
+        content: 'By: ';
+    }
+    div.date:before {
+        content: 'Published: ';
+    }
+
+    &:hover {
+        background-color: darken(@ter,10%);
+        border: 1px solid darken(@ter,40%);
+    }
+
+    &.open {
+        background-color: darken(@ter,10%);
+        border: 1px solid darken(@ter,40%);
+
+        img {
+            display: none;
+        }
+        div.video {
+            display: block;
+            iframe {
+                border: 0;
+                width: 100%;
+                min-height: 480;
+            }
+        }
+        p {
+            margin-left: inherit;
+        }
+    }
+
+}

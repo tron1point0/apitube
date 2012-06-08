@@ -1,26 +1,19 @@
-VERSION := 4.1.0
-ZIPFILE := ext-$(VERSION)-gpl.zip
+VERSION := 1.7.2
+JQUERY := jquery-$(VERSION).min.js
 
-download := http://cdn.sencha.io/$(ZIPFILE)
+download := http://code.jquery.com/$(JQUERY)
 downloader := $(shell which curl)
 downloader ?= $(shell which wget)
 
-COFFEE := $(shell which coffee)
-UNZIP := $(shell which unzip)
-
 .PHONY: all clean
-all: app.js extjs-$(VERSION)
+all: index.html
 clean:
-	-rm -rf extjs-$(VERSION)/ app.js $(ZIPFILE)
+	-rm app.js $(JQUERY) style.css index.html
 
-extjs-$(VERSION): ext-$(VERSION)-gpl.zip
-ifneq ($(UNZIP),)
-	$(UNZIP) $^
-else
-	$(error "Install unzip")
-endif
+index.html: app.js style.css
+app.js: $(JQUERY)
 
-ext-4.1.0-gpl.zip:
+$(JQUERY):
 ifeq ($(notdir $(downloader)),curl)
 	$(downloader) $(download) > $@
 else
@@ -31,9 +24,4 @@ else
 endif
 endif
 
-%.js: %.coffee
-ifneq ($(COFFEE),)
-	$(COFFEE) -p $^ > $@
-else
-	$(error "Install coffeescript")
-endif
+include Makefile.node
