@@ -1,55 +1,58 @@
 ($ '#search').on 'keyup', (event) ->
-    val = ($ this).val()
-    setTimeout (() ->
-        if ($ '#search').val() == val
-            ($ '#search').trigger 'search'), 200
+    $t = $ this
+    val = $t.val()
+    setTimeout (-> if $t.val() == val
+        $t.trigger 'search'), 200
+
+($ '#search').on 'search', -> $.get (youtube ($ this).val(),1), (data) ->
+    window.location.hash = encodeURI ($ '#search').val()
+    ($ document).scrollTop(0)
+    ($ '#results').empty().trigger 'load', data
 
 mapping = (fn,from,to) -> (obj) -> (from ff)[fn] (to tf)[fn]() for ff,tf of obj
 youtube = (youtube,offset) ->
     "https://gdata.youtube.com/feeds/api/videos?v=2&max-results=10&start-index=#{offset}&q=#{youtube}"
 
-search = (query,offset,fn) -> $.get (youtube query,offset), (data) ->
-    fn.call ($ data).find('entry').map ->
-        data = this
-        result = ($ '#preload > .result').clone()
-        $d = (query) -> ($ data).find(query).first()
-        $r = (query) -> ($ result).find(query).first()
-        video = ($d 'content').attr 'src'
+($ '#results').on 'load', (e,data) ->
+    $t = $ this
+    ($ data).find('entry').each ->
+        d = $ this
+        r = ($ '#preload > .result').clone()
+        $d = (query) -> d.find(query)
+        $r = (query) -> r.find(query)
+        video = ($d 'content:first').attr 'src'
         (mapping 'text', $r, $d) {
-            h1: 'title'
+            h1: 'title:first'
             '.author': 'author > name'
             '.date': 'published'
             p: 'description' }
-        ($r 'img').attr 'src', ($d 'thumbnail').attr 'url'
+        ($r 'img').attr 'src', ($d 'thumbnail:first').attr 'url'
         ($r 'a').attr 'href', ($d 'link[rel=alternate]').attr 'href'
-        result.on 'click.loadVideo', (event) ->
+        r.on 'click.loadVideo', ->
             ($ this)
                 .off('click.loadVideo')
                 .find('iframe').attr 'src', video
-        result
+        $t.append r
 
-($ '#search').on 'search', (event) -> search ($ this).val(), 1, ->
-    ($ '#results').empty()
-    this.each -> ($ this).appendTo '#results'
-
-loader = (event) ->
-    ($ this).off 'load'
-    search ($ this).val(), ($ '.result').length, ->
-        this.each -> ($ this).appendTo '#results'
-        ($ '#search').on 'load', loader
-($ '#search').on 'load', loader
+loadMore = (event) ->
+    $t = $ this
+    $t.off 'more'
+    $.get (youtube $t.val(), ($ '.result').length), (data) ->
+        ($ '#results').trigger 'load', data
+        $t.on 'more', loadMore
+($ '#search').on 'more', loadMore
 
 ($ document).on 'scroll', ->
     results = ($ '.result')
     elem = results.last().prev()
     offset = elem.offset().top - ($ window).height()
-    console.log ($ this).scrollTop(), offset
     if results.length > 0 and ($ this).scrollTop() > offset
-        ($ '#search').trigger 'load'
+        ($ '#search').trigger 'more'
 
 ($ 'body').on 'click', '#results > .result', (event) ->
+    ($ '.open').not($ this).removeClass 'open'
     ($ this).toggleClass 'open'
 
-($ '#search').val('skateboarding dog')
+($ '#search').val decodeURI window.location.hash.replace /^#/,''
 ($ '#search').trigger 'search'
 ($ '#search').focus()
