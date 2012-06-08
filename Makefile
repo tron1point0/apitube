@@ -1,27 +1,21 @@
-VERSION := 1.7.2
-JQUERY := jquery-$(VERSION).min.js
+VERSION := 1.7.2.min
+JQUERY = jquery-$(VERSION).js
 
-download := http://code.jquery.com/$(JQUERY)
-downloader := $(shell which curl)
-downloader ?= $(shell which wget)
+JQUERY_PATH := http://code.jquery.com
 
 .PHONY: all clean
 all: index.html
 clean:
-	-rm app.js $(JQUERY) style.css index.html
+	-rm static/app.js
+	-rm static/style.css
+	-rm static/$(JQUERY)
+	-rmdir static/
+	-rm index.html
 
-index.html: app.js style.css
-app.js: $(JQUERY)
+index.html: static/app.js static/style.css
+static/app.js: static/$(JQUERY)
 
-$(JQUERY):
-ifeq ($(notdir $(downloader)),curl)
-	$(downloader) $(download) > $@
-else
-ifeq ($(notdir $(downloader)),wget)
-	$(downloader) $(download) -O $@
-else
-	$(error "Get $(download)")
-endif
-endif
+static/jquery-%.js: | static/
+	$(call GET,$(JQUERY_PATH)/$(notdir $@),$@)
 
-include Makefile.node
+include web.mk

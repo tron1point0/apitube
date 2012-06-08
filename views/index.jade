@@ -2,7 +2,7 @@
 html
   head
     title Youtube
-    link(rel='stylesheet',type='text/css',href='style.css')
+    link(rel='stylesheet',type='text/css',href='static/style.css')
   body
     div#preload
       div.result
@@ -11,9 +11,9 @@ html
         h1 Title
         div.author Author
         div.date January 1, 1970
-        div.video
+        iframe(allowfullscreen)
         p Short description.
     input#search(type='text',placeholder='Search...')
     div#results
-  script(type='text/javascript',src='jquery-1.7.2.min.js')
-  script(type='text/javascript',src='app.js')
+  script(type='text/javascript',src='static/jquery-1.7.2.min.js')
+  script(type='text/javascript',src='static/app.js')
