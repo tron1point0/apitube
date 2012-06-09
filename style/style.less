@@ -5,6 +5,23 @@
 @sec: spin(@pri,@split);
 @ter: spin(@pri,-@split);
 
+.vertical-gradient (@from,@to) {
+    background: -webkit-gradient(linear, left top, left bottom, from(@from), to(@to));
+    background: -moz-linear-gradient(top, @from, @to);
+}
+
+.border-radius (@radius) {
+    border-radius: @radius;
+    -moz-border-radius: @radius;
+    -webkit-border-radius: @radius;
+}
+
+.box-shadow (@x: 0, @y: 0, @r: 0.5em, @c: rgba(0,0,0,0.5)) {
+    box-shadow: @arguments;
+    -moz-box-shadow: @arguments;
+    -webkit-box-shadow: @arguments;
+}
+
 input#search {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -17,7 +34,7 @@ input#search {
     border-top: 0;
     border-right: 0;
     border-left: 0;
-    box-shadow: 0 0 0.5em black;
+    .box-shadow;
 }
 
 div#preload {
@@ -29,7 +46,31 @@ div#results {
     margin-top: 4em;
 }
 
+.button (@color:@pri) {
+    color: darken(@color,50%);
+    border: 1px solid darken(@color,20%);
+    background-color: @color;
+    .vertical-gradient(@color,darken(@color,10%));
+    .border-radius(0.4em);
+    .box-shadow(0, 0, 0.3em, rgba(0,0,0,0.3));
+    text-decoration: none;
+    text-shadow: 0 0 0.4em lighten(@color,20%);
+    padding: 0.3em 0.5em 0.3em 0.5em;
+
+    &:hover {
+        background-color: lighten(@color,10%);
+        .vertical-gradient(lighten(@color,10%),@color);
+        color: darken(@color,30%);
+    }
+    &:active {
+        background-color: darken(@color,10%);
+        .vertical-gradient(darken(@color,10%),@color);
+    }
+}
+
 div#results > div.result {
+    .border-radius(0.7em);
+    .box-shadow(0,0,0.5em,rgba(0,0,0,0.3));
     border: 1px solid darken(@pri,20%);
     background-color: @pri;
     padding: 1em;
@@ -45,6 +86,7 @@ div#results > div.result {
         min-height: 90px;
         float: left;
         margin: 0 0.5em 0.5em 0;
+        .border-radius(0.5em);
     }
 
     h1 {
@@ -54,26 +96,13 @@ div#results > div.result {
 
     a {
         float: right;
-        color: darken(@pri,40%);
-        text-decoration: none;
-        border-radius: 0.4em;
-        border: 1px solid darken(@pri,40%);
-        background-color: darken(@pri,10%);
-        padding: 0.3em 0.5em 0.3em 0.5em;
+        .button(darken(@pri,20%));
         font-size: 80%;
         &:after {
             content: '➚';
         }
         &:visited {
             color: darken(@pri,50%);
-        }
-        &:hover {
-            border-color: darken(@sec,40%);
-            color: darken(@sec,40%);
-            background-color: darken(@sec,10%);
-        }
-        &:active {
-            box-shadow: inset 0 0 0.5em gray;
         }
     }
 
@@ -94,8 +123,8 @@ div#results > div.result {
     }
 
     &:hover, &.hover {
-        background-color: darken(@ter,10%);
-        border: 1px solid darken(@ter,40%);
+        background-color: darken(@pri,5%);
+        border: 1px solid darken(@pri,30%);
     }
 
     &.open {
