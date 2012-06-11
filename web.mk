@@ -1,7 +1,8 @@
-LESSC := $(shell which lessc)
-COFFEE := $(shell which coffee)
-JADE := $(shell which jade)
-NPM := $(shell which npm)
+LESSC = $(shell which lessc 2>/dev/null || echo node_modules/less/bin/lessc)
+COFFEE = $(shell which coffee 2>/dev/null || echo node_modules/coffee-script/bin/coffee)
+JADE = $(shell which jade 2>/dev/null || echo node_modules/jade/bin/jade)
+NPM = $(shell which npm)
+INSTALL = install
 
 getters := axel curl wget GET
 GETTER := $(shell $(patsubst %,which % 2>/dev/null ||,$(getters)) true)
@@ -18,31 +19,20 @@ vpath %.js . script scripts
 vpath %.jade . view views template templates
 vpath %.html . view views template templates
 
-ifeq ($(LESSC),)
-LESSC := node_modules/less/bin/lessc
-%.css: $(LESSC)
-endif
-ifeq ($(COFFEE),)
-COFFEE := node_modules/coffee-script/bin/coffee
-%.js: $(COFFEE)
-endif
-ifeq ($(JADE),)
-JADE := node_modules/jade/bin/jade
-%.html: $(JADE)
-endif
+.SECONDARY: $(LESSC) $(COFFEE) $(JADE)
+
+%/:
+	mkdir -p $@
 
 node_modules/%: $(NPM)
 	$(NPM) install $(firstword $(subst /, ,$*))
 
 .SECONDEXPANSION:
-%.css: $(notdir $$*).less | $$(@D)/
+%.css: $(notdir $$*).less | $(LESSC) $(dir $$*)/
 	$(LESSC) $< $@
 
-%.js: $(notdir $$*).coffee | $$(@D)/
+%.js: $(notdir $$*).coffee | $(COFFEE) $(dir $$*)/
 	$(COFFEE) -p $< > $@
 
-%.html: $(notdir $$*).jade | $$(@D)/
+%.html: $(notdir $$*).jade | $(JADE) $(dir $$*)/
 	$(JADE) -Pp $(dir $<) < $< > $@
-
-%/:
-	mkdir -p $@
