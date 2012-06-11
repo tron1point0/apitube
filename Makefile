@@ -15,7 +15,8 @@ clean:
 index.html: static/app.js static/style.css
 static/app.js: static/$(JQUERY)
 
-static/jquery-%.js: | static/
+static/$(JQUERY):
+	$(INSTALL) -d static/
 	$(call GET,$(JQUERY_PATH)/$(notdir $@),$@)
 
 include web.mk
