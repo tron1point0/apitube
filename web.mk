@@ -29,7 +29,7 @@ node_modules/%: $(NPM)
 
 .SECONDEXPANSION:
 %.css: $(notdir $$*).less | $(LESSC) $(dir $$*)/
-	$(LESSC) $< $@
+	$(LESSC) $< > $@
 
 %.js: $(notdir $$*).coffee | $(COFFEE) $(dir $$*)/
 	$(COFFEE) -p $< > $@
